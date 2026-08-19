@@ -1,0 +1,51 @@
+name: Odyssey ticket watcher
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      send_test_notification:
+        description: "Send a clearly labelled ServerChan test (not a ticket event)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: odyssey-ticket-watcher
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+      TICKET_SOURCE_URL: ${{ vars.TICKET_SOURCE_URL || 'https://www.maoyan.com/cinema/181' }}
+      SEND_TEST_NOTIFICATION: ${{ inputs.send_test_notification || 'false' }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Restore latest watcher state
+        id: state
+        uses: actions/cache/restore@v4
+        with:
+          path: .state
+          key: odyssey-state-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            odyssey-state-
+
+      - name: Check ticket availability
+        run: python3 monitor.py
+
+      - name: Save watcher state
+        if: success() && env.SEND_TEST_NOTIFICATION != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .state
+          key: odyssey-state-${{ github.run_id }}-${{ github.run_attempt }}
