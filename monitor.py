@@ -35,7 +35,7 @@ def fetch(url: str) -> str:
 
 
 def visible_text(raw: str) -> str:
-    raw = re.sub(r"(?is)<(script|style|noscript).*?>.*?</\\1>", " ", raw)
+    raw = re.sub(r"(?is)<(script|style|noscript).*?>.*?</\1>", " ", raw)
     raw = re.sub(r"(?i)<(?:br|/p|/div|/li|/tr|/section|/h[1-6])[^>]*>", "\n", raw)
     raw = re.sub(r"(?s)<[^>]+>", " ", raw)
     text = html.unescape(raw).replace("\xa0", " ")
