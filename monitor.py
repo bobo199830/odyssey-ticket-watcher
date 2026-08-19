@@ -17,7 +17,20 @@ from pathlib import Path
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-SOURCE_URL = os.getenv("TICKET_SOURCE_URL", "https://www.maoyan.com/cinema/181")
+def normalize_source_url(value: str) -> str:
+    value = value.strip()
+    # Accept an accidentally pasted Markdown link: [label](https://example).
+    markdown = re.fullmatch(r"\[[^\]]*\]\((https?://[^)]+)\)", value)
+    if markdown:
+        value = markdown.group(1)
+    if not re.fullmatch(r"https?://[^\s]+", value):
+        raise RuntimeError("TICKET_SOURCE_URL must be a plain http(s) URL")
+    return value
+
+
+SOURCE_URL = normalize_source_url(
+    os.getenv("TICKET_SOURCE_URL", "https://www.maoyan.com/cinema/181")
+)
 STATE_FILE = Path(os.getenv("STATE_FILE", ".state/odyssey.json"))
 TITLE_WORDS = ("奥德赛", "The Odyssey")
 AVAILABLE_WORDS = ("选座购票", "立即购票", "购票")
