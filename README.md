@@ -20,4 +20,4 @@ SendKey 不写入代码，也不会输出到日志。
 
 打开 **Actions → Odyssey ticket watcher → Run workflow**。默认执行真实检查；若需要验证 Server酱链路，可将 `send_test_notification` 设为 `true`，它只发送明确标注的手动测试消息，不会伪造票务变化。
 
-数据源默认是猫眼的[中国电影博物馆影院页](https://www.maoyan.com/cinema/181)。可通过仓库变量 `TICKET_SOURCE_URL` 覆盖。
+数据源默认是猫眼的[中国电影博物馆影院页](https://www.maoyan.com/cinema/181)。可通过仓库变量 `TICKET_SOURCE_URL` 覆盖；变量值应填写纯 URL（例如 `https://www.maoyan.com/cinema/181`），不要填写 Markdown 链接。
