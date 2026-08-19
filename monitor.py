@@ -74,12 +74,8 @@ def parse_sessions(text: str) -> dict[str, dict]:
         if "散场" in before or "散场" in after:
             continue
         context = section[match.start():match.start() + 220]
-        markers = []
-        markers.extend((context.find(w), False) for w in UNAVAILABLE_WORDS if w in context)
-        markers.extend((context.find(w), True) for w in AVAILABLE_WORDS if w in context)
-        # Use the first explicit sale-status marker in this row. This prevents a
-        # following row's status from overriding the current session.
-        available = min(markers, default=(sys.maxsize, False))[1]
+        unavailable = next((w for w in UNAVAILABLE_WORDS if w in context), None)
+        available = any(w in context for w in AVAILABLE_WORDS) and unavailable is None
         # A session is recorded even when sold out, but ambiguous markup is not
         # called available. This makes notifications deliberately conservative.
         status = "AVAILABLE" if available else "UNAVAILABLE"
