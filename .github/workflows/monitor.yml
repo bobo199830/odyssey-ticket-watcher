@@ -1,8 +1,7 @@
 name: Odyssey ticket watcher
 
 on:
-  schedule:
-    - cron: "3/10 * * * *"
+  # Scheduled checks are paused. Keep manual runs available for diagnostics.
   workflow_dispatch:
     inputs:
       send_test_notification:
